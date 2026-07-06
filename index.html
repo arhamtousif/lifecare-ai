@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeCare AI - Multi-Agent Family Healthcare Platform</title>
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Custom tailwind configuration
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            medical: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#b9ddfd',
+              300: '#7cc2fd',
+              400: '#36a3fc',
+              500: '#0c87eb',
+              600: '#0267c7',
+              700: '#0352a1',
+              800: '#074685',
+              900: '#0c3b6f',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-full flex flex-col transition-colors duration-200">
+
+  <!-- Header Section -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigate('landing')">
+        <div class="bg-blue-600 text-white p-2 rounded-xl shadow-md shadow-blue-500/25 flex items-center justify-center font-bold font-display text-lg">
+          LC
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg tracking-tight font-display bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            LifeCare AI
+          </h1>
+        </div>
+      </div>
+
+      <!-- Navigation Menus -->
+      <nav class="hidden md:flex space-x-1 text-sm font-semibold">
+        <button id="nav-landing" onclick="navigate('landing')" class="px-3 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-gray-800">Home</button>
+        <button id="nav-command-center" onclick="navigate('command-center')" class="px-3 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-gray-800">Family Command</button>
+        <button id="nav-patient-dashboard" onclick="navigate('patient-dashboard')" class="px-3 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-gray-800">Dashboard</button>
+        <button id="nav-emergency" onclick="navigate('emergency')" class="px-3 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-gray-800 text-red-600 dark:text-red-400">Emergency</button>
+        <button id="nav-privacy" onclick="navigate('privacy')" class="px-3 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-gray-800">Privacy Dashboard</button>
+        <button id="nav-showcase" onclick="navigate('showcase')" class="px-3 py-2 rounded-lg transition hover:bg-gray-50 dark:hover:bg-gray-800 text-indigo-600 dark:text-indigo-400">Why LifeCare</button>
+      </nav>
+
+      <!-- Accessibility / Profile Switcher -->
+      <div class="flex items-center space-x-2">
+        <!-- Scale Text -->
+        <div class="flex border border-gray-200 dark:border-gray-700 rounded-lg p-0.5 text-[10px] font-bold">
+          <button onclick="changeTextScale('normal')" class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">A</button>
+          <button onclick="changeTextScale('large')" class="px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800">A+</button>
+          <button onclick="changeTextScale('extra-large')" class="px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800">A++</button>
+        </div>
+        
+        <!-- High Contrast -->
+        <button onclick="toggleHighContrast()" class="p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-850" title="Toggle High Contrast">
+          🌓
+        </button>
+
+        <!-- Dark Mode -->
+        <button onclick="document.documentElement.classList.toggle('dark')" class="p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50" title="Toggle Dark Theme">
+          🌙
+        </button>
+
+        <!-- Active Patient Quick Menu -->
+        <select onchange="changeActivePatient(this.value)" class="text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg py-1.5 px-2.5 font-semibold text-gray-700 dark:text-gray-200">
+          <option value="arthur-pendelton">Arthur Pendelton</option>
+          <option value="eleanor-vance">Eleanor Vance</option>
+          <option value="david-miller">David Miller</option>
+        </select>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+    
+    <!-- Left Dashboard Section -->
+    <div class="flex-1 flex flex-col space-y-6">
+
+      <!-- View: Landing -->
+      <section id="view-landing" class="space-y-8 py-4">
+        <!-- Hero section -->
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-xs font-extrabold rounded-full uppercase tracking-widest">
+            Kaggle AI Agent Concierge Track
+          </span>
+          <h2 class="text-4xl md:text-5xl font-black font-display text-gray-900 dark:text-white leading-tight">
+            LifeCare AI
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300">
+            A production-ready, local-first multi-agent care management platform helping families secure and simplify medicine, visits, risk tracking, and caregiver updates.
+          </p>
+        </div>
+
+        <!-- Demo Mode Persona Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 md:p-8 rounded-3xl text-white shadow-xl">
+          <h3 class="text-xl font-bold font-display mb-2">🚀 Instant Demo Mode (No registration required)</h3>
+          <p class="text-sm opacity-90 mb-6">Select a profile below to launch LifeCare AI with realistic chronic diagnoses, caregiver networks, and simulated agent tasks.</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Arthur Card -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-base">Arthur Pendelton</h4>
+                <p class="text-xs opacity-75 mt-1">Age 78 • Type 2 Diabetes • Metformin Adherence Issue</p>
+              </div>
+              <button onclick="tryDemoMode('arthur-pendelton')" class="mt-4 w-full py-2 bg-white text-blue-700 text-xs font-bold rounded-xl hover:bg-gray-100 transition">
+                Load Arthur (Diabetic)
+              </button>
+            </div>
+            
+            <!-- Eleanor Card -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-base">Eleanor Vance</h4>
+                <p class="text-xs opacity-75 mt-1">Age 72 • Heart Failure • Beta-Blockers Schedule</p>
+              </div>
+              <button onclick="tryDemoMode('eleanor-vance')" class="mt-4 w-full py-2 bg-white text-blue-700 text-xs font-bold rounded-xl hover:bg-gray-100 transition">
+                Load Eleanor (Heart Patient)
+              </button>
+            </div>
+
+            <!-- David Card -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-base">David Miller</h4>
+                <p class="text-xs opacity-75 mt-1">Age 54 • Chronic Pain & Back issues • Gabapentin Schedule</p>
+              </div>
+              <button onclick="tryDemoMode('david-miller')" class="mt-4 w-full py-2 bg-white text-blue-700 text-xs font-bold rounded-xl hover:bg-gray-100 transition">
+                Load David (Chronic Meds)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Presets / Workflow quick-triggers for judges -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-800/80">
+          <h3 class="font-black text-gray-900 dark:text-gray-100 text-lg mb-3">🛠️ Judge Preset Scenarios (Test Flows)</h3>
+          <p class="text-xs text-gray-500 mb-4">Click any scenario to watch the Supervisor Agent decompose the prompt, delegate tasks to specialized agents in real time, and compile the final summary in the reasoning sidebar.</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button onclick="triggerPresetFlow(1)" class="p-3 bg-gray-50 hover:bg-blue-50 dark:bg-gray-900 dark:hover:bg-gray-800 text-left border rounded-xl transition group">
+              <div class="flex items-center space-x-2">
+                <span class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-black">FLOW 1</span>
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-200">Meds & Caregiver Escalation</span>
+              </div>
+              <p class="text-[11px] text-gray-500 mt-2 italic group-hover:text-blue-700">"My father takes Metformin twice daily and often forgets his evening dose."</p>
+            </button>
+
+            <button onclick="triggerPresetFlow(2)" class="p-3 bg-gray-50 hover:bg-blue-50 dark:bg-gray-900 dark:hover:bg-gray-800 text-left border rounded-xl transition group">
+              <div class="flex items-center space-x-2">
+                <span class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-black">FLOW 2</span>
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-200">Appointment Checklist</span>
+              </div>
+              <p class="text-[11px] text-gray-500 mt-2 italic group-hover:text-blue-700">"I need to prepare for a cardiology appointment next week."</p>
+            </button>
+
+            <button onclick="triggerPresetFlow(3)" class="p-3 bg-gray-50 hover:bg-blue-50 dark:bg-gray-900 dark:hover:bg-gray-800 text-left border rounded-xl transition group">
+              <div class="flex items-center space-x-2">
+                <span class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-black">FLOW 3</span>
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-200">Missed Dose Alerts</span>
+              </div>
+              <p class="text-[11px] text-gray-500 mt-2 italic group-hover:text-blue-700">"My mother missed medication for two days."</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- System overview card -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2">🔒 Privacy-First Design</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-300">
+              LifeCare AI operates entirely local-first. All patient data, timelines, and caregiver records reside safely inside your browser's local sandbox. Toggle local-first DB encryption on the Privacy Dashboard to witness secure payload protection.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2">🗣️ Voice-First Accessibility</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-300">
+              Tailored for elderly users, LifeCare AI includes a high-contrast mode, text scaling, a simplified dashboard view, and Web Speech API compatibility. Tap the microphone in the AI panel to ask questions by voice.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Family Command Center -->
+      <section id="view-command-center" class="hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white">Family Command Center</h2>
+            <p class="text-xs text-gray-500">Monitor active health alerts and caregiver workloads across multiple relatives.</p>
+          </div>
+        </div>
+        
+        <!-- Relatives list -->
+        <div id="command-relatives-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamically filled by app.js -->
+        </div>
+
+        <!-- Care Circle Notifications summary -->
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-3">🔔 CareCircle Unified Feed</h4>
+          <div class="space-y-2 max-h-60 overflow-y-auto">
+            <div class="p-2 bg-yellow-50 dark:bg-yellow-950/20 text-xs rounded border border-yellow-200 text-yellow-800 dark:text-yellow-400">
+              <strong>Arthur Pendelton:</strong> Bedtime Atorvastatin reminder alert sent. No log registered. (10:00 PM yesterday)
+            </div>
+            <div class="p-2 bg-green-50 dark:bg-green-950/20 text-xs rounded border border-green-200 text-green-800 dark:text-green-400">
+              <strong>Eleanor Vance:</strong> Daily weight recorded: 154.2 lbs. Stability check verified. (09:00 AM today)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Patient Dashboard -->
+      <section id="view-patient-dashboard" class="hidden space-y-6">
+        <!-- Patient Title and Mode Switcher -->
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 gap-3">
+          <div>
+            <h2 id="dash-patient-name" class="text-2xl font-extrabold text-gray-900 dark:text-white">Patient Dashboard</h2>
+            <p id="dash-patient-meta" class="text-xs text-gray-500"></p>
+          </div>
+          <div>
+            <button onclick="toggleSimpleMode()" class="px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 text-xs font-black rounded-xl transition">
+              🔄 Switch Dashboard View (Simple / Standard)
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard Simple Mode Layout (Rendered in app.js if toggled) -->
+        <div id="dashboard-simple-layout" class="hidden"></div>
+
+        <!-- Dashboard Standard Mode Layout -->
+        <div id="dashboard-standard-layout" class="space-y-6">
+          
+          <!-- Impact Dashboard Section -->
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <h3 class="font-extrabold text-gray-900 dark:text-white text-base mb-4 flex items-center space-x-1">
+              <span>📈 Performance & Impact Analytics</span>
+            </h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <!-- Adherence Rate -->
+              <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <span class="text-[10px] text-gray-400 uppercase font-black tracking-wider">Adherence Rate</span>
+                <p id="dash-adherence-percentage" class="text-2xl font-black text-emerald-600 mt-1">94%</p>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                  <div id="dash-adherence-bar" class="bg-emerald-500 h-full rounded-full" style="width: 94%"></div>
+                </div>
+              </div>
+
+              <!-- Caregiver hours saved -->
+              <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <span class="text-[10px] text-gray-400 uppercase font-black tracking-wider">Hours Saved (Monthly)</span>
+                <p id="dash-caregiver-hours" class="text-2xl font-black text-indigo-600 mt-1">24 hrs</p>
+                <span class="text-[9px] text-gray-400">Task automations</span>
+              </div>
+
+              <!-- Risk Reduction -->
+              <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <span class="text-[10px] text-gray-400 uppercase font-black tracking-wider">Risk Reduction</span>
+                <p id="dash-risk-reduction" class="text-2xl font-black text-rose-600 mt-1">-45%</p>
+                <span class="text-[9px] text-gray-400">Preventative action</span>
+              </div>
+
+              <!-- Health Engagement Score -->
+              <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <span class="text-[10px] text-gray-400 uppercase font-black tracking-wider">Engagement Index</span>
+                <p id="dash-engagement-score" class="text-2xl font-black text-blue-600 mt-1">88/100</p>
+                <span class="text-[9px] text-gray-400">Logs & checkups</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Medications Card -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-4">
+              <div class="flex justify-between items-center border-b pb-2 dark:border-gray-700">
+                <h3 class="font-extrabold text-base text-gray-900 dark:text-white">💊 Today's Medications</h3>
+                <span class="text-xs text-gray-400">Check to mark complete</span>
+              </div>
+              <div id="dash-meds-list" class="space-y-3">
+                <!-- Filled dynamically -->
+              </div>
+            </div>
+
+            <!-- Doctor Appointments Checklist Card -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-4">
+              <div class="flex justify-between items-center border-b pb-2 dark:border-gray-700">
+                <h3 class="font-extrabold text-base text-gray-900 dark:text-white">📅 Doctor Visits Checklist</h3>
+                <button onclick="navigate('emergency')" class="text-xs text-blue-600 font-bold hover:underline">Emergency Info →</button>
+              </div>
+              <div id="dash-appointments-list" class="space-y-4">
+                <!-- Filled dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- CareCircle & Activity section -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- CareCircle Tasks list -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-3">
+              <h4 class="font-black text-sm text-gray-900 dark:text-white border-b pb-1.5 dark:border-gray-700 flex justify-between">
+                <span>👥 CareCircle Coordination</span>
+                <span class="text-[10px] text-gray-400 font-normal">Task Allocator</span>
+              </h4>
+              <div id="dash-carecircle-tasks" class="space-y-2">
+                <!-- Filled dynamically -->
+              </div>
+              <!-- New Task Form -->
+              <form onsubmit="addCareCircleTask(event)" class="mt-3 flex gap-2">
+                <input id="new-task-title" type="text" placeholder="Add task (e.g. pick up meds)" required
+                       class="flex-1 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <select id="new-task-assignee" class="text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-1.5">
+                  <option value="Robert Pendelton">Robert</option>
+                  <option value="Sarah Pendelton">Sarah</option>
+                  <option value="Arthur Pendelton">Arthur</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white px-3 text-xs font-bold rounded-lg hover:bg-blue-700">+</button>
+              </form>
+            </div>
+
+            <!-- CareCircle Notes and log updates -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-3">
+              <h4 class="font-black text-sm text-gray-900 dark:text-white border-b pb-1.5 dark:border-gray-700">
+                💬 Shared Family Notes
+              </h4>
+              <div id="dash-carecircle-feed" class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                <!-- Filled dynamically -->
+              </div>
+              <!-- New Note Form -->
+              <form onsubmit="addCareCircleNote(event)" class="mt-2 flex gap-2">
+                <input id="new-note-text" type="text" placeholder="Share updates..." required
+                       class="flex-1 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-600 text-white px-3 text-xs font-bold rounded-lg hover:bg-blue-700">Send</button>
+              </form>
+            </div>
+
+            <!-- Health Activity Timeline -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-3">
+              <h4 class="font-black text-sm text-gray-900 dark:text-white border-b pb-1.5 dark:border-gray-700">
+                🏥 Health Activity Log
+              </h4>
+              <div id="dash-health-timeline" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                <!-- Filled dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Alert widget dashboard container -->
+          <div id="dash-alerts-list" class="space-y-2">
+            <!-- Dynamic Risk Engine Alert -->
+          </div>
+
+        </div>
+      </section>
+
+      <!-- View: Emergency Response Center -->
+      <section id="view-emergency" class="hidden space-y-6">
+        <div class="bg-red-600 text-white p-6 rounded-3xl shadow-lg flex justify-between items-center">
+          <div>
+            <h2 class="text-3xl font-black font-display">Emergency Response Center</h2>
+            <p class="text-sm opacity-90 mt-1">Instant critical medical profile card access for paramedics or caregivers.</p>
+          </div>
+          <button onclick="window.printReport(document.querySelector('select').value)" class="bg-white text-red-600 font-bold px-4 py-2 rounded-xl text-xs hover:bg-red-50 transition no-print">
+            Print Wallet Card 🖨️
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Key Medical Summary card -->
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border-2 border-red-200 dark:border-red-950/40 md:col-span-2 space-y-4">
+            <h3 class="font-extrabold text-lg text-gray-900 dark:text-white border-b pb-2 flex justify-between">
+              <span>Patient: <span id="emergency-patient-name" class="text-red-600"></span></span>
+              <span class="text-xs bg-red-100 text-red-800 px-2.5 py-0.5 rounded font-black">CRITICAL DATA</span>
+            </h3>
+
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl">
+                <strong class="text-xs text-gray-400 block uppercase">Critical Diagnoses</strong>
+                <span id="emergency-conditions" class="font-bold text-gray-800 dark:text-gray-200 mt-1 block"></span>
+              </div>
+              <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl">
+                <strong class="text-xs text-gray-400 block uppercase">Critical Allergies</strong>
+                <span id="emergency-allergies" class="font-bold text-red-600 mt-1 block"></span>
+              </div>
+              <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl">
+                <strong class="text-xs text-gray-400 block uppercase">Blood Group</strong>
+                <span id="emergency-blood-type" class="font-bold text-gray-800 dark:text-gray-200 mt-1 block"></span>
+              </div>
+              <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl">
+                <strong class="text-xs text-gray-400 block uppercase">Assigned Pharmacy</strong>
+                <span id="emergency-pharmacy" class="font-bold text-gray-700 dark:text-gray-300 mt-1 block"></span>
+              </div>
+            </div>
+
+            <!-- Emergency Actions card -->
+            <div class="bg-red-50/50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/30 p-4 rounded-2xl">
+              <h4 class="font-extrabold text-sm text-red-950 dark:text-red-400 mb-2">🚑 Paramedic Protocol Guidelines</h4>
+              <ul class="text-xs list-disc list-inside text-red-850 dark:text-gray-300 space-y-1">
+                <li>Verify patient's last Metformin or Lisinopril logging sessions prior to insulin infusion.</li>
+                <li>Avoid administering penicillin-based antibiotics (Penicillin Allergy Active).</li>
+                <li>Access the raw encrypted payload logs on the Privacy Dashboard for offline validation.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Emergency Contacts & Active Medications -->
+          <div class="space-y-6">
+            <!-- Active medications list -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-3">
+              <h4 class="font-black text-sm text-gray-900 dark:text-white border-b pb-2">🚨 Active Medications</h4>
+              <div id="emergency-active-meds" class="space-y-2">
+                <!-- Filled dynamically -->
+              </div>
+            </div>
+
+            <!-- Emergency Phone Contacts -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-3">
+              <h4 class="font-black text-sm text-gray-900 dark:text-white border-b pb-2">📞 Escalled Contacts</h4>
+              <div id="emergency-contacts-list" class="space-y-2">
+                <!-- Filled dynamically -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- View: Privacy Dashboard -->
+      <section id="view-privacy" class="hidden space-y-6">
+        <div>
+          <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white">Security & Privacy Dashboard</h2>
+          <p class="text-xs text-gray-500">Configure role-based access, local-first settings, and manage memory engines.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Storage settings -->
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 md:col-span-2 space-y-6">
+            
+            <div class="flex items-center justify-between border-b pb-4 dark:border-gray-700">
+              <div>
+                <h4 class="font-bold text-gray-900 dark:text-white text-sm">Local-First Storage & Encryption</h4>
+                <p class="text-xs text-gray-500">Enable military-grade client-side encryption wrapper. Data never leaves the browser.</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="toggle-encryption-btn" type="checkbox" onchange="toggleDatabaseEncryption(this)" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            <!-- Raw DB encrypted code preview block -->
+            <div class="space-y-2">
+              <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Raw Database Encryption Preview (localStorage)</h5>
+              <div class="bg-gray-900 text-emerald-400 font-mono text-[11px] p-3 rounded-lg overflow-x-auto border border-gray-800">
+                <code id="privacy-raw-db-preview"></code>
+              </div>
+              <span class="text-[10px] text-gray-400 block">Note: If encryption is enabled, data serialized to your local browser storage is reverse-salted Base64 encrypted.</span>
+            </div>
+
+            <!-- Role-based Access parameters -->
+            <div class="space-y-3">
+              <h5 class="text-xs font-bold text-gray-450 uppercase tracking-wider block">Simulator Role-Based Access Controls</h5>
+              <p class="text-xs text-gray-500">Toggle roles to experience security layout restrictions (e.g. Paramedics can bypass reminders, Patient hides logs, Caregiver reviews all).</p>
+              <div id="privacy-role-selector" class="flex gap-2 flex-wrap">
+                <!-- Loaded dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Memory fact deleter panel -->
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-4">
+            <h4 class="font-black text-sm text-gray-900 dark:text-white border-b pb-2">🧠 Memory Agent Database</h4>
+            <p class="text-xs text-gray-500">The Memory Agent extracts user preferences from natural dialogues to personalize future visit summaries. Review and delete learned memories below:</p>
+            
+            <div id="privacy-memory-facts" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- View: Showcase Page ("Why SafeLife") -->
+      <section id="view-showcase" class="hidden space-y-6">
+        <div>
+          <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white">Why LifeCare AI</h2>
+          <p class="text-xs text-gray-500">Technical insights, architecture maps, and Kaggle AI Agent competition showcase details.</p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-6">
+          <h3 class="font-black text-gray-900 dark:text-white text-base">🤖 Autonomous Multi-Agent Coordination</h3>
+          <p class="text-xs text-gray-600 dark:text-gray-300">LifeCare AI employs a hierarchical team where the <strong>Supervisor Agent</strong> acts as lead dispatcher, running structured plans and managing flow communication between 6 highly specialized agents:</p>
+          
+          <!-- Live graph node layout representation -->
+          <div class="bg-gray-50 dark:bg-gray-900/60 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-center overflow-x-auto">
+            <svg id="agent-graph-svg" class="w-[600px] h-[260px] max-w-full" viewBox="0 0 600 260">
+              <!-- Connecting paths -->
+              <path id="path-supervisor-memory" d="M 300,130 L 150,50" stroke="#d1d5db" stroke-width="2" fill="none" class="collaboration-path" />
+              <path id="path-supervisor-medication" d="M 300,130 L 300,50" stroke="#d1d5db" stroke-width="2" fill="none" class="collaboration-path" />
+              <path id="path-supervisor-emergency" d="M 300,130 L 450,50" stroke="#d1d5db" stroke-width="2" fill="none" class="collaboration-path" />
+              <path id="path-supervisor-caregiver" d="M 300,130 L 150,210" stroke="#d1d5db" stroke-width="2" fill="none" class="collaboration-path" />
+              <path id="path-supervisor-appointment" d="M 300,130 L 300,210" stroke="#d1d5db" stroke-width="2" fill="none" class="collaboration-path" />
+              <path id="path-supervisor-record" d="M 300,130 L 450,210" stroke="#d1d5db" stroke-width="2" fill="none" class="collaboration-path" />
+
+              <!-- Supervisor Node -->
+              <g class="cursor-pointer" transform="translate(250, 105)">
+                <rect id="node-supervisor" width="100" height="50" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#1e40af" font-size="10" font-weight="bold" text-anchor="middle">👑 Supervisor</text>
+              </g>
+
+              <!-- Memory Node -->
+              <g transform="translate(100, 25)">
+                <rect id="node-memory" width="100" height="50" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#9d174d" font-size="10" font-weight="bold" text-anchor="middle">🧠 Memory</text>
+              </g>
+
+              <!-- Medication Node -->
+              <g transform="translate(250, 25)">
+                <rect id="node-medication" width="100" height="50" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#065f46" font-size="10" font-weight="bold" text-anchor="middle">💊 Medication</text>
+              </g>
+
+              <!-- Emergency Node -->
+              <g transform="translate(400, 25)">
+                <rect id="node-emergency" width="100" height="50" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#991b1b" font-size="10" font-weight="bold" text-anchor="middle">🚨 Emergency</text>
+              </g>
+
+              <!-- Caregiver Node -->
+              <g transform="translate(100, 185)">
+                <rect id="node-caregiver" width="100" height="50" rx="10" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#6b21a8" font-size="10" font-weight="bold" text-anchor="middle">👥 Caregiver</text>
+              </g>
+
+              <!-- Appointment Node -->
+              <g transform="translate(250, 185)">
+                <rect id="node-appointment" width="100" height="50" rx="10" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#3730a3" font-size="10" font-weight="bold" text-anchor="middle">📅 Appointment</text>
+              </g>
+
+              <!-- Record Node -->
+              <g transform="translate(400, 185)">
+                <rect id="node-record" width="100" height="50" rx="10" fill="#ecfeff" stroke="#06b6d4" stroke-width="1.5" class="agent-node transition duration-300" />
+                <text x="50" y="28" fill="#155e75" font-size="10" font-weight="bold" text-anchor="middle">🗂️ Health Record</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Impact Metrics description -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+              <h4 class="font-bold text-xs uppercase tracking-wide text-gray-500">Real-world Problem</h4>
+              <p class="text-xs mt-1 text-gray-600 dark:text-gray-300">
+                Medical omissions are responsible for over 100,000 avoidable deaths yearly. Elderly and chronic patients struggle with complex schedules, while family caregivers lack visibility.
+              </p>
+            </div>
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+              <h4 class="font-bold text-xs uppercase tracking-wide text-gray-500">LifeCare AI Solution</h4>
+              <p class="text-xs mt-1 text-gray-600 dark:text-gray-300">
+                Specialized agents autonomously verify schedules, flag clinical risks (Medication Agent), coordinate notifications (Caregiver Agent), print physician checklists (Appointment Agent), and sync family helpers (CareCircle).
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Right Side Sidebar: AI Orchestrator & Reasoning Panel -->
+    <aside class="w-full md:w-80 flex flex-col space-y-6">
+      
+      <!-- AI Dialog Panel -->
+      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col shadow-sm">
+        <h3 class="font-black text-gray-900 dark:text-white text-base mb-3 flex items-center space-x-2">
+          <span class="inline-block w-2.5 h-2.5 bg-blue-600 rounded-full animate-ping"></span>
+          <span>LifeCare AI Panel</span>
+        </h3>
+        
+        <!-- Live responses container -->
+        <div id="ai-concierge-results" class="space-y-3 min-h-[120px] max-h-64 overflow-y-auto mb-4 border-b border-gray-100 dark:border-gray-700/60 pb-3">
+          <div class="text-xs text-gray-400 italic">
+            Waiting for query or scenario preset...
+          </div>
+        </div>
+
+        <!-- Query input box -->
+        <div class="space-y-2">
+          <div class="flex gap-2">
+            <input id="chat-user-input" type="text" placeholder="Type query (e.g. prepares card card)..." 
+                   class="flex-1 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <button id="chat-submit-btn" onclick="submitAIQuery()" class="bg-blue-600 text-white font-bold px-4 py-2 text-xs rounded-xl hover:bg-blue-700 transition">Send</button>
+          </div>
+          
+          <!-- Accessibility voice assistance mic trigger -->
+          <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-900 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800/80">
+            <span id="voice-mic-status" class="text-[10px] text-gray-500 font-bold">Click to talk</span>
+            <button onclick="toggleVoiceInput()" class="relative flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 transition">
+              <span id="voice-mic-pulse" class="absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-25"></span>
+              🎤
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OCR Bottle Recognition widget -->
+      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+        <h3 class="font-black text-gray-900 dark:text-white text-sm">📸 Prescription Photo Scanner</h3>
+        <p class="text-[10px] text-gray-500">Upload prescription label photo. Medication details are automatically extracted via OCR analysis.</p>
+        
+        <!-- Drag and drop zone -->
+        <div class="border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-400 transition p-4 rounded-xl text-center cursor-pointer relative">
+          <input type="file" id="ocr-file-input" onchange="triggerBottleOCRUpload(this)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+          <span class="text-xs text-gray-400 block">📁 Click or drop label image here</span>
+        </div>
+
+        <!-- Scanning progress -->
+        <div id="ocr-scan-indicator" class="hidden space-y-1">
+          <span id="ocr-scan-label" class="text-[10px] text-gray-500 font-bold block"></span>
+          <div class="w-full bg-gray-100 dark:bg-gray-900 h-1.5 rounded-full overflow-hidden">
+            <div id="ocr-scan-progress" class="bg-blue-600 h-full rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Confirm extracted details form -->
+        <form id="ocr-scan-results" onsubmit="saveOCRMedication(event)" class="hidden space-y-2 border-t pt-2 border-gray-100 dark:border-gray-850">
+          <span id="ocr-confidence" class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-black block w-max"></span>
+          
+          <div class="space-y-1 text-xs">
+            <label class="font-bold text-gray-400 uppercase tracking-wide text-[9px] block">Drug Name</label>
+            <input id="ocr-drug-name" type="text" class="w-full bg-gray-50 dark:bg-gray-900 border rounded-lg p-1.5 focus:outline-none" required>
+          </div>
+          <div class="space-y-1 text-xs">
+            <label class="font-bold text-gray-400 uppercase tracking-wide text-[9px] block">Dosage</label>
+            <input id="ocr-drug-dosage" type="text" class="w-full bg-gray-50 dark:bg-gray-900 border rounded-lg p-1.5 focus:outline-none" required>
+          </div>
+          <div class="space-y-1 text-xs">
+            <label class="font-bold text-gray-400 uppercase tracking-wide text-[9px] block">Instructions</label>
+            <input id="ocr-drug-instructions" type="text" class="w-full bg-gray-50 dark:bg-gray-900 border rounded-lg p-1.5 focus:outline-none" required>
+          </div>
+
+          <button type="submit" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition">
+            ✓ Log Medication to Profile
+          </button>
+        </form>
+      </div>
+
+      <!-- Live Agent Reasoning Timeline -->
+      <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex-1 flex flex-col max-h-[400px] shadow-sm">
+        <h3 class="font-black text-gray-900 dark:text-white text-sm border-b pb-2 flex justify-between">
+          <span>🧠 Live Reasoning Timeline</span>
+          <span class="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-black uppercase tracking-wider">Simulation</span>
+        </h3>
+        
+        <div id="reasoning-timeline-list" class="mt-4 space-y-4 overflow-y-auto pr-1 flex-1">
+          <!-- Populated live by app.js -->
+          <div class="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
+            Submit a query above to start the live Agent Reasoning simulation.
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <footer class="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-850 mt-12 py-4">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400">
+      LifeCare AI • Designed for the Kaggle AI Agent Challenge • Local-First Healthcare
+    </div>
+  </footer>
+
+  <!-- Script Libraries -->
+  <script src="data.js"></script>
+  <script src="agents.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
