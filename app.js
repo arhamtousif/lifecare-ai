@@ -1,4 +1,4 @@
-// SafeLife Concierge Application Controller
+// LifeCare Concierge Application Controller
 (function () {
   // 1. Initial State Setup
   let state = {
@@ -14,8 +14,8 @@
   };
 
   // Local storage keys
-  const DB_KEY = "safelife_concierge_db";
-  const SETTINGS_KEY = "safelife_concierge_settings";
+  const DB_KEY = "lifecare_concierge_db";
+  const SETTINGS_KEY = "lifecare_concierge_settings";
 
   // Cache of patients data
   let patientsData = {};
@@ -32,11 +32,11 @@
         }
       } catch (e) {
         console.error("Failed to load database. Restoring defaults.", e);
-        patientsData = JSON.parse(JSON.stringify(window.SafeLifeData.patients));
+        patientsData = JSON.parse(JSON.stringify(window.LifeCareData.patients));
         saveDatabase();
       }
     } else {
-      patientsData = JSON.parse(JSON.stringify(window.SafeLifeData.patients));
+      patientsData = JSON.parse(JSON.stringify(window.LifeCareData.patients));
       saveDatabase();
     }
   }
@@ -99,10 +99,10 @@
     }, 0);
 
     const baseAdherence = totalDoses > 0 ? Math.round((takenDoses / totalDoses) * 100) : 100;
-    
+
     // Add variations based on missed logs
     let finalAdherence = Math.min(100, Math.max(50, baseAdherence));
-    
+
     // Adjust risk score
     let riskScore = 20;
     let riskLevel = "Low";
@@ -122,7 +122,7 @@
     patient.metrics.adherenceRate = finalAdherence;
     patient.metrics.riskScore = riskLevel;
     patient.metrics.riskReason = riskReason;
-    
+
     // Adjust health timeline alerts based on missed check
     const missedMetformin = patient.medications.find(m => m.name === "Metformin" && !m.takenToday.evening);
     if (missedMetformin && !patient.healthTimeline.some(item => item.title === "Missed Evening Metformin")) {
@@ -201,7 +201,7 @@
     // 1. Patient Profile Info
     document.getElementById("dash-patient-name").innerText = patient.name;
     document.getElementById("dash-patient-meta").innerText = `Age: ${patient.age} • ${patient.gender} • Profile: ${patient.diagnoses.join(", ")}`;
-    
+
     // Simple Mode Toggle Layout
     const standardDash = document.getElementById("dashboard-standard-layout");
     const simpleDash = document.getElementById("dashboard-simple-layout");
@@ -236,11 +236,11 @@
     // 4. Clinical Alerts & Impact Highlights
     const alertsContainer = document.getElementById("dash-alerts-list");
     alertsContainer.innerHTML = "";
-    
+
     // Risk Warning Widget
     const riskClass = patient.metrics.riskScore === "High" ? "bg-red-50 dark:bg-red-950/20 border-red-200" : patient.metrics.riskScore === "Medium" ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200" : "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200";
     const textRiskClass = patient.metrics.riskScore === "High" ? "text-red-700 dark:text-red-400" : patient.metrics.riskScore === "Medium" ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400";
-    
+
     alertsContainer.innerHTML = `
       <div class="border rounded-xl p-3 ${riskClass}">
         <div class="flex items-center justify-between">
@@ -304,7 +304,7 @@
   // Simple Mode Layout for elderly patients
   function renderSimpleDashboard(patient) {
     const simpleContainer = document.getElementById("dashboard-simple-layout");
-    
+
     // Large icons and controls
     const todayMeds = patient.medications.map(med => {
       const times = Object.keys(med.takenToday);
@@ -323,8 +323,8 @@
     }).join("");
 
     const upcomingAppt = patient.appointments[0] || null;
-    const apptText = upcomingAppt 
-      ? `Dr. ${upcomingAppt.doctor} (${upcomingAppt.specialty}) on ${upcomingAppt.date} at ${upcomingAppt.time}` 
+    const apptText = upcomingAppt
+      ? `Dr. ${upcomingAppt.doctor} (${upcomingAppt.specialty}) on ${upcomingAppt.date} at ${upcomingAppt.time}`
       : "No doctor appointments scheduled.";
 
     simpleContainer.innerHTML = `
@@ -360,7 +360,7 @@
   function createMedicationCard(med) {
     const card = document.createElement("div");
     card.className = "bg-white/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 p-3 rounded-xl flex items-center justify-between";
-    
+
     // Identify dose timings
     const timingDoses = Object.keys(med.takenToday);
     const allCompleted = timingDoses.every(t => med.takenToday[t]);
@@ -444,12 +444,12 @@
   function renderFamilyCommandCenter() {
     const listContainer = document.getElementById("command-relatives-list");
     listContainer.innerHTML = "";
-    
+
     // Gather all family members
     Object.keys(patientsData).forEach(id => {
       const patient = patientsData[id];
       const riskClass = patient.metrics.riskScore === "High" ? "border-red-400 ring-2 ring-red-100 bg-red-50/20" : patient.metrics.riskScore === "Medium" ? "border-amber-400 ring-2 ring-amber-100 bg-amber-50/20" : "border-emerald-200 bg-emerald-50/10";
-      
+
       const card = document.createElement("div");
       card.className = `border rounded-2xl p-4 transition duration-300 hover:shadow-lg ${riskClass} cursor-pointer`;
       card.onclick = () => {
@@ -507,7 +507,7 @@
     document.getElementById("emergency-allergies").innerText = patient.criticalInfo.allergies.join(", ");
     document.getElementById("emergency-blood-type").innerText = patient.criticalInfo.bloodType;
     document.getElementById("emergency-pharmacy").innerText = patient.criticalInfo.pharmacy;
-    
+
     // Quick active meds list
     const medsList = document.getElementById("emergency-active-meds");
     medsList.innerHTML = patient.medications.map(m => `
@@ -534,7 +534,7 @@
   function renderPrivacyDashboard(patient) {
     document.getElementById("toggle-encryption-btn").checked = state.encryptionEnabled;
     document.getElementById("privacy-raw-db-preview").innerText = getRawStoragePreview();
-    
+
     // Dynamic role display
     const roles = ["Patient", "Caregiver", "Doctor", "Responder"];
     const roleContainer = document.getElementById("privacy-role-selector");
@@ -561,7 +561,7 @@
     });
   }
 
-  // View 5: Showcase Page Renderer ("Why SafeLife")
+  // View 5: Showcase Page Renderer ("Why LifeCare")
   function renderShowcasePage() {
     // Draws/updates the SVGs and static diagrams in showcase view if needed.
     // SVG collaboration paths are animated using dynamic classes.
@@ -585,17 +585,17 @@
     const med = patient.medications.find(m => m.id === medId);
     if (med) {
       med.takenToday[timeKey] = !med.takenToday[timeKey];
-      
+
       // Update health timeline when checked off
       if (med.takenToday[timeKey]) {
         patient.healthTimeline.unshift({
           date: new Date().toISOString().split("T")[0],
           type: "Medication",
           title: `Logged ${med.name} (${timeKey})`,
-          details: `Patient marked ${med.name} ${med.dosage} dose as completed at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}.`
+          details: `Patient marked ${med.name} ${med.dosage} dose as completed at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`
         });
       }
-      
+
       saveDatabase();
       renderView();
     }
@@ -607,7 +607,7 @@
     if (med) {
       const times = Object.keys(med.takenToday);
       const isTaken = times.every(t => med.takenToday[t]);
-      
+
       times.forEach(t => {
         med.takenToday[t] = !isTaken;
       });
@@ -631,7 +631,7 @@
     const task = patient.careCircle.tasks.find(t => t.id === taskId);
     if (task) {
       task.completed = !task.completed;
-      
+
       // Trigger metric changes
       if (task.completed) {
         patient.metrics.caregiverHoursSaved += 2; // Simulated efficiency
@@ -643,7 +643,7 @@
           details: `Assigned task was checked off successfully.`
         });
       }
-      
+
       saveDatabase();
       renderView();
     }
@@ -653,7 +653,7 @@
     e.preventDefault();
     const titleInput = document.getElementById("new-task-title");
     const assignSelect = document.getElementById("new-task-assignee");
-    
+
     if (titleInput && titleInput.value.trim()) {
       const patient = patientsData[state.activePatientId];
       const newTask = {
@@ -664,7 +664,7 @@
         completed: false,
         category: "Caregiving"
       };
-      
+
       patient.careCircle.tasks.push(newTask);
       titleInput.value = "";
       saveDatabase();
@@ -680,10 +680,10 @@
       const newNote = {
         id: "n_" + Date.now(),
         author: state.role === "Caregiver" ? patient.careCircle.owner : patient.name,
-        date: new Date().toLocaleString([], {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'}),
+        date: new Date().toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
         text: noteText.value.trim()
       };
-      
+
       patient.careCircle.notes.unshift(newNote);
       noteText.value = "";
       saveDatabase();
@@ -749,30 +749,30 @@
     const progress = document.getElementById("ocr-scan-progress");
     const label = document.getElementById("ocr-scan-label");
     const resultBox = document.getElementById("ocr-scan-results");
-    
+
     if (fileInput.files.length === 0) return;
 
     indicator.classList.remove("hidden");
     resultBox.classList.add("hidden");
-    
+
     let currentPct = 0;
     label.innerText = "Analyzing prescription image...";
-    
+
     const timer = setInterval(() => {
       currentPct += 10;
       progress.style.width = `${currentPct}%`;
       if (currentPct >= 100) {
         clearInterval(timer);
         indicator.classList.add("hidden");
-        
+
         // Mock extracted medication details
         label.innerText = "Scanning complete!";
-        
+
         document.getElementById("ocr-drug-name").value = "Metformin";
         document.getElementById("ocr-drug-dosage").value = "500mg";
         document.getElementById("ocr-drug-instructions").value = "Twice daily with meals";
         document.getElementById("ocr-confidence").innerText = "96% Confidence Level";
-        
+
         resultBox.classList.remove("hidden");
       }
     }, 150);
@@ -794,7 +794,7 @@
       count: 60,
       takenToday: { morning: false, evening: false }
     };
-    
+
     patient.medications.push(newMed);
     patient.healthTimeline.unshift({
       date: new Date().toISOString().split("T")[0],
@@ -885,7 +885,7 @@
       <div id="print-section" class="p-8 text-black bg-white max-w-4xl mx-auto">
         <div class="flex justify-between items-center border-b-2 border-blue-600 pb-4">
           <div>
-            <h1 class="text-3xl font-bold font-display text-blue-800">SafeLife Physician Report</h1>
+            <h1 class="text-3xl font-bold font-display text-blue-800">LifeCare Physician Report</h1>
             <p class="text-sm text-gray-500">Concierge Track Patient summary card</p>
           </div>
           <div class="text-right">
@@ -941,7 +941,7 @@
         </div>
         
         <div class="mt-8 border-t pt-4 text-center text-[10px] text-gray-400">
-          Generated automatically by SafeLife AI Concierge. Stored locally-first.
+          Generated automatically by LifeCare AI Concierge. Stored locally-first.
         </div>
       </div>
     `;
@@ -961,11 +961,11 @@
 
     const query = input.value.trim();
     state.processingQuery = true;
-    
+
     // UI Loading state
     const agentLogsContainer = document.getElementById("agent-logs-flow");
     const submitBtn = document.getElementById("chat-submit-btn");
-    
+
     if (submitBtn) submitBtn.disabled = true;
     input.value = "";
 
@@ -974,9 +974,9 @@
 
     try {
       // Connect agent listeners to update UI live
-      window.SafeLifeAgents.clearTimeline();
-      
-      const responseHtml = await window.SafeLifeAgents.runOrchestrationWorkflow(
+      window.LifeCareAgents.clearTimeline();
+
+      const responseHtml = await window.LifeCareAgents.runOrchestrationWorkflow(
         query,
         state.activePatientId,
         { patients: patientsData }
@@ -986,7 +986,7 @@
       const bubble = document.createElement("div");
       bubble.className = "bg-white/90 dark:bg-gray-800/90 border border-blue-100 dark:border-blue-900 p-4 rounded-2xl shadow-sm text-sm";
       bubble.innerHTML = responseHtml;
-      
+
       const resultsContainer = document.getElementById("ai-concierge-results");
       resultsContainer.innerHTML = "";
       resultsContainer.appendChild(bubble);
@@ -1006,7 +1006,7 @@
   function resetAgentGraphUI() {
     const paths = document.querySelectorAll(".collaboration-path");
     paths.forEach(p => p.classList.remove("flow-line-active"));
-    
+
     const nodes = document.querySelectorAll(".agent-node");
     nodes.forEach(n => {
       n.classList.remove("agent-node-thinking");
@@ -1059,9 +1059,9 @@
   function renderReasoningTimeline(timeline) {
     const timelineContainer = document.getElementById("reasoning-timeline-list");
     if (!timelineContainer) return;
-    
+
     timelineContainer.innerHTML = "";
-    
+
     if (timeline.length === 0) {
       timelineContainer.innerHTML = `
         <div class="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
@@ -1083,7 +1083,7 @@
       };
 
       const color = typeColors[log.agent] || "border-gray-300";
-      
+
       const payloadString = log.payload ? `
         <pre class="bg-gray-100 dark:bg-gray-900 text-[10px] p-1.5 rounded mt-1.5 font-mono overflow-x-auto text-gray-600 dark:text-gray-400 max-w-full truncate">${JSON.stringify(log.payload, null, 2)}</pre>
       ` : "";
@@ -1111,7 +1111,7 @@
       2: "I need to prepare for a cardiology appointment next week.",
       3: "My mother missed medication for two days."
     };
-    
+
     const input = document.getElementById("chat-user-input");
     if (input) {
       input.value = inputs[flowNum];
@@ -1136,7 +1136,7 @@
     initDatabase();
 
     // Hook agent event listeners
-    window.SafeLifeAgents.addStateListener((type, data) => {
+    window.LifeCareAgents.addStateListener((type, data) => {
       if (type === "reasoning_update") {
         renderReasoningTimeline(data.timeline);
       } else if (type === "agent_status_change") {
@@ -1164,7 +1164,7 @@
   });
 
   // Export state variables for debug or inspector tools
-  window.SafeLifeApp = {
+  window.LifeCareApp = {
     getState: () => state,
     getPatients: () => patientsData,
     saveDatabase
